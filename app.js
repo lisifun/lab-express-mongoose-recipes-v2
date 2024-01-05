@@ -2,6 +2,8 @@ const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 
+const Recipe = require("./models/Recipe.model");
+
 const app = express();
 
 // MIDDLEWARE
@@ -19,7 +21,6 @@ mongoose
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
   )
   .catch((err) => console.error("Error connecting to mongo", err));
-  
 
 // ROUTES
 //  GET  / route - This is just an example route
@@ -29,9 +30,27 @@ app.get("/", (req, res) => {
 
 //  Iteration 3 - Create a Recipe route
 //  POST  /recipes route
+app.post("/recipes", (req, res) => {
+  Recipe.create(req.body)
+    .then((createdRecipe) => {
+      res.status(201).json(createdRecipe);
+    })
+    .catch((err) => {
+      res.status(500).json({ err: "Error while creating a new recipe" });
+    });
+});
 
 //  Iteration 4 - Get All Recipes
 //  GET  /recipes route
+app.get("/recipes", (req, res) => {
+  Recipe.find()
+    .then((allRecipes) => {
+      res.status(200).json(allRecipes);
+    })
+    .catch((err) => {
+      res.status(500).json({ err: "Error while getting all recipes" });
+    });
+});
 
 //  Iteration 5 - Get a Single Recipe
 //  GET  /recipes/:id route
